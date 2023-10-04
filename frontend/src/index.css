@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@font-face {
+    font-family: shabnam;
+    src: url(./fonts/shabnam-font-v5.0.1/shabnam-font-v5.0.1/Shabnam.ttf) format(truetype);
+    font-family: dorandis;
+    src: url(./fonts/IRANDorandis/IRANDorandis/IRANDorandis.ttf);
+}

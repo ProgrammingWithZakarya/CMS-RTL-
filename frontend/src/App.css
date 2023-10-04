@@ -1,0 +1,131 @@
+:root {
+  --pallet-color-900: #033023;
+  --pallet-color-700: #066046;
+  --pallet-color-500: #0ba87b;
+  --pallet-color-200: #3ff3c0;
+  --pallet-color-50: #cffcef;
+
+}
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  direction: rtl;
+  font-family: shabnam;
+}
+
+.active {
+  backdrop-filter: brightness(1.25);
+}
+
+.icon-white {
+  color: white;
+}
+
+.icon-green{
+  color: #066046;
+}
+.icon-red {
+  color: rgb(234, 17, 17);
+}
+.icon-blue {
+  color: rgb(0, 98, 255);
+}
+.btn-normal {
+  background-color: var(--pallet-color-50) !important;
+  color: var(--pallet-color-500) !important;
+  font-weight: 700 !important;
+
+}
+
+@keyframes showModal {
+  0% {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.modal-cotainer {
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.479);
+  backdrop-filter: blur(5px);
+  animation: showModal .5s ease;
+  z-index: 2000;
+}
+
+.input-children {
+  padding: 5px 10px;
+  border: 0;
+  outline: 0;
+  border-radius: 5px;
+  background-color: rgb(233, 233, 233);
+}
+
+.input-children:hover {
+  background-color: rgb(218, 218, 218);
+}
+
+.input-children:focus {
+  background-color: rgb(206, 206, 206);
+}
+
+@keyframes show-Alert {
+  0% {
+    opacity: 0;
+    transform: scaleX(0) translate(20%, -20%);
+  }
+
+  5% {
+    opacity: 1;
+    transform: scale(1) translate(0);
+  }
+
+  95% {
+    transform: scale(1) translate(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scaleX(0) translate(-50%, 0);
+    opacity: 0;
+  }
+}
+
+.alert-show {
+  animation: show-Alert 30s ease alternate both;
+  -webkit-animation: show-Alert 30s ease alternate both;
+}
+
+.empty-page {
+  width: 100%;
+  height: auto;
+  font-size: 35px;
+  font-weight: 900;
+  background-color: rgb(190, 40, 40);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+}
+.text-nowrap{
+  text-wrap: nowrap;
+}
+.inputFile:invalid {
+  background-color: rgb(210, 7, 7);
+}
