@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import ContentData from "../../../content-data";
 import { Button } from "@mui/material";
-export default function EditDetailsProduct({ newProductForm , updater}) {
+export default function EditDetailsProduct({ newProductForm, updater }) {
     const contextData = useContext(ContentData)
     const [categories, setCategories] = useState([])
     const [imageSrc, setImageSrc] = useState([])
@@ -14,15 +14,16 @@ export default function EditDetailsProduct({ newProductForm , updater}) {
     const [productCategory, setProductCategory] = useState('')
     const [fetched, setFetched] = useState([])
     useEffect(() => {
-        fetch("http://localhost:3000/api/products").then(res => {
-            if (!res.ok) {
-                res.text().then(text => {
-                    throw new Error(text)
-                })
-            } else {
-                return res.json()
-            }
-        })
+        fetch("http://localhost:3000/api/products")
+            .then(res => {
+                if (!res.ok) {
+                    res.text().then(text => {
+                        throw new Error(text)
+                    })
+                } else {
+                    return res.json()
+                }
+            })
             .then(data => setFetched(data))
             .catch(err => console.log(err))
     }, [])
@@ -38,40 +39,55 @@ export default function EditDetailsProduct({ newProductForm , updater}) {
     }, [contextData.currentProduct])
     function submitFormHandler() {
         const newProduct = {
-            id: contextData.currentProduct.id,
-            title: productTitle,
+            title: productTitle || 'images/1.jpg',
             price: productPrice,
             count: productCount,
-            off: productOff,
+            // off: productOff,
             productDesc,
             img: imageSrc,
-            popularity: contextData.currentProduct.popularity,
-            url: contextData.currentProduct.url,
-            categoryID: contextData.currentProduct.categoryID,
-            sale: contextData.currentProduct.sale,
-            colors: contextData.currentProduct.colors
+            popularity: 100,
+            sale: productPrice,
+            colors: productColors
         }
-        fetch(`http://localhost:3000/api/products${newProductForm ? "" : '/' + contextData.currentProduct.id}`,
-            {
-                method: newProductForm ? "POST" : "PUT",
-                headers: {
-                    'Content-Type': "application/json"
-                },
-                body: JSON.stringify(newProduct)
-            }
-        ).then(res => {
-            if(!res.ok){
-                res.text().then(text => {
-                    throw new Error(text)
-                })
-            } else {
-                return res.json()
-            }
-        }).then(data => {
-            console.log(data);
-            updater(prevValue => !prevValue)
-            contextData.setIsShowEditDetailsModal(false)
-        }).catch(err=> console.log(err))
+        if (newProductForm) {
+            fetch(`http://localhost:3000/api/products`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify(newProduct)
+                }
+            ).then(res => {
+                if (!res.ok) {
+                    res.text().then(text => {
+                        throw new Error(text)
+                    })
+                } else {
+                    return res.json()
+                }
+            }).then(data => {
+                console.log(data);
+                updater(prevValue => !prevValue)
+                contextData.setIsShowEditDetailsModal(false)
+            }).catch(err => console.log(err))
+        } else {
+            fetch(`http://localhost:3000/api/products/${contextData.currentProduct.id}`,
+                {
+                    method: "PUT",
+                    body: JSON.stringify(newProduct)
+                }
+            ).then(res => {
+                if (!res.ok) {
+                    res.text().then(text => {
+                        throw new Error(text)
+                    })
+                } else {
+                    return res.json()
+                }
+            }).then(data => {
+                console.log(data);
+                updater(prevValue => !prevValue)
+                contextData.setIsShowEditDetailsModal(false)
+            }).catch(err => console.log(err))
+        }
     }
     return (
         <>
