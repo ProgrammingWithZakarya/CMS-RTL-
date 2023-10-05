@@ -4,13 +4,12 @@ import routes from './routes';
 import Navbar from './Components/NavBar/Navbar';
 import Header from './Components/Header/Header';
 import ContentData from './content-data';
-import { useState } from 'react';
+import { useState , useEffect } from 'react';
 //  //////////////////////////////////////////
 function App() {
 	const [componentStyle, setComponentStyle] = useState('bg-gray-300 shadow-inner shadow-gray-500 dark:bg-gray-700 dark:text-gray-100 dark:shadow-gray-500')
 	const [isDark, setIsDark] = useState(false);
 	const [deleteModal, setDeleteModal] = useState(false);
-	const [addTodoModal, setAddTodoModal] = useState(false);
 	const [showAlert, setShowAlert] = useState(false);
 	const [AddProductModal, setAddProductModal] = useState(false);
 	const [AddAdminModal, setAddAdminModal] = useState(false);
@@ -23,7 +22,13 @@ function App() {
 	const [currentProduct, setCurrentProduct] = useState([])
 	const [currentUser, setCurrentUser] = useState([])
 	const router = useRoutes(routes)
-
+	useEffect(() =>  {
+		if (localStorage.getItem("todos")) {
+			return
+		} else {
+			localStorage.setItem('todos' , [])
+		}
+	} , [])
 
 	return (
 		<ContentData.Provider value={{
@@ -33,8 +38,6 @@ function App() {
 			setComponentStyle,
 			deleteModal,
 			setDeleteModal,
-			addTodoModal,
-			setAddTodoModal,
 			addTodoValue,
 			setAddTodoValue,
 			showAlert,
