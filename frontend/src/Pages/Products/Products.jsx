@@ -13,7 +13,6 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import DetailsProduct from '../../Components/Modals/DetailsProduct/DetailsProduct';
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import EditDetailsProduct from '../../Components/Modals/EditDetailsProduct/EditDetailsProduct';
-import { convertLegacyOperators } from '@mui/x-data-grid/internals';
 
 export default function Products() {
   // ///////////////// STATES //////////////////////////
