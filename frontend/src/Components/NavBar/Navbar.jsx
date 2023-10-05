@@ -10,7 +10,7 @@ import { Tooltip } from "@mui/material";
 export default function Navbar() {
 	return (
 		<div
-			className=" bg-gradient-to-t from-palette-500 to-palette-900 h-16 w-auto dark:from-palette-900 dark:to-teal-950 fixed bottom-2 left-1/2 -translate-x-1/2 rounded-lg z-[999] 
+			className=" bg-palette-700 h-16 w-auto dark:from-palette-900 dark:to-teal-950 fixed bottom-2 left-1/2 -translate-x-1/2 rounded-lg z-[999] 
 			translate-y-[55%] opacity-50 hover:translate-y-0 hover:opacity-100 transition-all">
 			<div className="wrapper flex w-full h-full"  >
 				<div className="list-wrapper text-emerald-50 p-2 flex items-center justify-center w-full h-full ">
