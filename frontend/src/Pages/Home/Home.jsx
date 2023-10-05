@@ -8,60 +8,106 @@ import Chart from '../../Components/Chart/Chart';
 import CircleChart from '../../Components/Chart/CircleChart';
 import ContentData from '../../content-data';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { mostSellingProducts, users } from '../../Datas';
+import { mostSellingProducts } from '../../Datas';
 import DeleteModal from '../../Components/Modals/DeleteModal/DeleteModal';
 import AddTodoModal from '../../Components/Modals/AddTodoModal/AddTodoModal'
 import SmallAlert from '../../Components/Alerts/SamllAlert';
 import usePriceFormatter from '../../CustomHooks/usePriceFormatter/usePriceFormatter';
-const rows = users.admins[1].todos.length || [{ id: 1, title: "هیچ موردی یافت نشد :/", isCompleted: false }];
-const columns = [
-  {
-    field: "title",
-    headerName: "عنوان",
-    width: 500,
-    editable: true,
-  },
-  {
-    field: 'isCompleted',
-    headerName: "وضعیت",
-    width: 120,
-    editable: false,
-    renderCell(params) {
-      return (
-        <>
-          <span className={`${params.row.isCompleted === true ?
-            'bg-palette-50 text-palette-500 ' :
-            "bg-blue-50 text-blue-500"} py-1 px-3 rounded-md flex justify-center items-center w-full font-bold`}>
-            {params.row.isCompleted ? 'حله' : 'مونده'}
-          </span>
-          <DeleteOutlineIcon className='text-red-700' />
-        </>
-      )
-    }
-  },
-];
 // /////////////////////////////////////////////////////
-
 export default function Home() {
-
   const [products, setProducts] = useState([])
-
+  const [addTodoModal, setAddTodoModal] = useState(false);
+  const [todos, setTodos] = useState([])
+  const [updater, setUpdater] = useState(false)
+  // ---------------------------------------------  FUNCTIONS  ---------------------------------
+  const complateHandler = (row) => {
+    let foundIndex = todos.findIndex((todo) => todo.id === row.id)
+    setTodos(prevValue => {
+      (foundIndex !== undefined) && (prevValue[foundIndex].isCompleted = !(prevValue[foundIndex].isCompleted))
+      return [...prevValue]
+    })
+    localStorage.setItem('todos', JSON.stringify([...todos]))
+  }
+  // //
+  const deleteTodoHandler = (row) => {
+    setTodos(todos.filter(todo => todo.id !== row.id))
+    localStorage.setItem('todos' , JSON.stringify(todos))
+    setUpdater(prevValue => !prevValue)
+  }
+  // ---------------------------------------------- USEEFFECTS  -----------------------------------------------
   useEffect(() => {
     fetch('http://localhost:3000/api/products')
-    .then(res => {
-      if(!res.ok){
-        res.text().then(text => {
-          throw new Error(text)
-        })
+      .then(res => {
+        if (!res.ok) {
+          res.text().then(text => {
+            throw new Error(text)
+          })
+        } else {
+          return res.json()
+        }
+      })
+      .then(allProducts => setProducts(allProducts))
+      .catch(err => console.log(err))
+      if (localStorage.getItem('todos')) {
+        setTodos(localStorage.getItem('todos'))
       } else {
-        return res.json()
+        localStorage.setItem('todos' , JSON.stringify([]))
+        setTodos(localStorage.getItem('todos'))
       }
-    })
-    .then(allProducts => setProducts(allProducts))
-    .catch(err => console.log(err))
+  }, [])
 
-  } , [])
-
+  useEffect(() => {
+    JSON.parse(localStorage.getItem('todos')).length === 0
+      ? setTodos([{ id: 404, title: "هیچ موردی یافت نشد :/", isCompleted: false }])
+      : setTodos(JSON.parse(localStorage.getItem('todos')));
+  }, [addTodoModal, updater])
+  // -------------------------------------------  COLUMNS   -----------------------------------------------------------
+  const columns = [
+    {
+      field: "todoTitle",
+      headerName: "عنوان",
+      width: 500,
+      editable: true,
+      renderCell(params){
+        return (
+          <p className={params.row.isCompleted && 'line-through'}>{params.row.title}</p>
+        )
+      }
+    },
+    {
+      field: 'isCompleted',
+      headerName: "وضعیت",
+      width: 120,
+      editable: false,
+      renderCell(params) {
+        return (
+          <>
+            <span
+              onClick={() => complateHandler(params.row)}
+              className={`${params.row.isCompleted === true ?
+                'bg-palette-50 text-palette-500 ' :
+                "bg-blue-50 text-blue-500"} 
+                py-1 px-3 rounded-md flex justify-center items-center w-full font-bold select-none cursor-pointer`}>
+              {params.row.isCompleted ? 'حله' : 'مونده'}
+            </span>
+          </>
+        )
+      }
+    },
+    {
+      field: "options",
+      headerName: "گزینه ها",
+      width: 90,
+      editable: false,
+      renderCell(params) {
+        return (
+          <IconButton onClick={() => deleteTodoHandler(params.row)}>
+            <DeleteOutlineIcon className='text-red-700' />
+          </IconButton>
+        )
+      }
+    }
+  ];
   const mspColumns = [
     {
       field: "id",
@@ -101,7 +147,7 @@ export default function Home() {
     }
   ]
   const contextData = useContext(ContentData);
-
+  // =================================================   JSX COMPONENT  ==========================================================
   return (
     <div className='w-full h-full flex flex-col gap-3 overflow-y-scroll overflow-x-hidden bg-gray-200 p-5 dark:bg-gray-900 dark:text-white'>
       <div className="features flex gap-10 justify-evenly flex-wrap ">
@@ -120,9 +166,16 @@ export default function Home() {
         <div className={`todos h-auto w-auto rounded-lg flex flex-nowrap flex-col gap-1 p-3 items-center ${contextData.componentStyle}`}>
           <div className="flex items-center gap-2 w-full pr-5">
             <h5 className='font-bold text-lg'>لیست کارها</h5>
-            <IconButton className='bg-palette-50 stroke-palette-500' onClick={() => contextData.setAddTodoModal(true)} ><AddIcon /></IconButton>
+            <IconButton
+              className='bg-palette-50 fill-palette-500 stroke-palette-700'
+              onClick={() => {
+                setAddTodoModal(true)
+              }}
+            >
+              <AddIcon className='icon-green' />
+            </IconButton>
           </div>
-          <Datagrid rows={rows} columns={columns} />
+          <Datagrid rows={todos} columns={columns} />
         </div>
         <div className={`most-delling-porducts w-auto h-auto rounded-lg p-3 flex flex-col gap-2 ${contextData.componentStyle}`}>
           <h5 className='font-bold text-lg'>پرفروش ترین محصولات </h5>
@@ -130,7 +183,7 @@ export default function Home() {
         </div>
       </div>
       <DeleteModal />
-      <AddTodoModal header={'یه مورد جدید اضافه کنید'} desc={"عنوان یادداشت خود را در ورودی زیر بنویسسد"} />
+      <AddTodoModal header={'یه مورد جدید اضافه کنید'} desc={"عنوان یادداشت خود را در ورودی زیر بنویسسد"} isShowModal={addTodoModal} setAddTodoModal={setAddTodoModal} />
       <SmallAlert title={'در حال بارگیری...'} />
     </div>
   )
